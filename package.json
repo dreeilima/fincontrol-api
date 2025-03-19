@@ -1,0 +1,16 @@
+{
+  "name": "fincontrol-v1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@prisma/client": "5.4.2",
+    "@wppconnect-team/wppconnect": "^1.35.2",
+    "pino": "^9.6.0",
+    "prisma": "5.4.2"
+  }
+}
