@@ -8,7 +8,7 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
-from .routes import users, whatsapp, transactions, categories, auth
+from .routes import users, whatsapp, transactions, categories, auth, reports
 from fastapi.responses import RedirectResponse
 from .db.prisma import create_prisma, is_connected
 from .core.config import settings
@@ -48,6 +48,7 @@ app.include_router(whatsapp.router, prefix="/whatsapp", tags=["whatsapp"])
 app.include_router(transactions.router, prefix="/transactions", tags=["transactions"])
 app.include_router(categories.router)
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(reports.router, prefix="/reports", tags=["reports"])
 
 @app.get("/")
 async def root():

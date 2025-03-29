@@ -1,6 +1,7 @@
 import httpx
-from typing import Optional
+from typing import Optional, Dict, Any
 from app.core.config import settings
+from ..modules.claude import generateResponse
 
 class WhatsAppService:
     def __init__(self, base_url: str, secret_key: str):
@@ -38,6 +39,47 @@ class WhatsAppService:
             print(f"URL: {self.base_url}/qr")
             print(f"Secret key: {'*' * len(self.secret_key)}")
             raise
+
+    async def register_transaction(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Registra uma nova transação.
+        
+        Args:
+            data (Dict[str, Any]): Dados da transação
+            
+        Returns:
+            Dict[str, Any]: Dados da transação registrada
+        """
+        try:
+            print(f"\n=== REGISTRANDO TRANSAÇÃO ===")
+            print(f"Dados: {data}")
+            
+            response = await self.client.post("/webhook", json=data)
+            response.raise_for_status()
+            result = response.json()
+            
+            print(f"Transação registrada com sucesso: {result}")
+            return result
+            
+        except Exception as e:
+            print(f"Erro ao registrar transação: {str(e)}")
+            raise
+
+    async def generate_response(self, context: dict) -> str:
+        """
+        Gera uma resposta usando o módulo Claude.
+        
+        Args:
+            context (Dict[str, Any]): Contexto com as informações necessárias para gerar a resposta
+            
+        Returns:
+            str: Mensagem formatada
+        """
+        try:
+            return await generateResponse(context)
+        except Exception as e:
+            print(f"Erro ao gerar resposta: {str(e)}")
+            return "Desculpe, ocorreu um erro ao gerar a resposta."
 
     async def __aenter__(self):
         return self

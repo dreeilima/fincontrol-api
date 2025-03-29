@@ -4,23 +4,30 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = config('DATABASE_URL', default='postgresql://[seu-user]:[sua-senha]@[seu-host]/[seu-db]')
+    database_url: str = config('DATABASE_URL')
     
     # WhatsApp
-    whatsapp_service_url: str = config('WHATSAPP_SERVICE_URL', default='http://127.0.0.1:3000')
-    whatsapp_secret_key: str = config('WHATSAPP_SECRET_KEY', default='fincontrol-whatsapp-key-2024')
+    whatsapp_service_url: str = config('whatsapp_service_url')
+    whatsapp_secret_key: str = config('whatsapp_secret_key')
     
     # Server
-    ip: str = config('ip', default="127.0.0.1")
-    port: int = config('port', default=8000, cast=int)
+    ip: str = config('ip')
+    port: int = config('port', cast=int)
     
     # Token settings
-    access_token_expire_minutes: int = config('access_token_expire_minutes', default=30, cast=int)
-    reset_token_expire_hours: int = config('reset_token_expire_hours', default=24, cast=int)
+    access_token_expire_minutes: int = config('access_token_expire_minutes', cast=int)
+    reset_token_expire_hours: int = config('reset_token_expire_hours', cast=int)
     
-    # JWT
-    secret_key: str = config('SECRET_KEY', default='your-secret-key-here')
-    algorithm: str = config('ALGORITHM', default='HS256')
+    # Security
+    secret_key: str = config('SECRET_KEY')
+    algorithm: str = config('ALGORITHM')
+    
+    # Webhook
+    webhook_url: str = config('WEBHOOK_URL')
+    
+    # Environment
+    environment: str = config('ENVIRONMENT', default='development')
+    debug: bool = config('DEBUG', default=False, cast=bool)
 
     class Config:
         env_file = ".env"

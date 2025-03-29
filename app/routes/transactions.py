@@ -70,4 +70,110 @@ async def create_expense(
         if hasattr(e, 'errors'):
             error_msg = e.errors()[0].get('msg', str(e))
             raise HTTPException(status_code=422, detail=f"Erro de validação: {error_msg}")
-        raise HTTPException(status_code=400, detail=f"Erro ao criar transação: {str(e)}") 
+        raise HTTPException(status_code=400, detail=f"Erro ao criar transação: {str(e)}")
+
+@router.post("/income", response_model=TransactionOut)
+async def create_income(
+    transaction: TransactionCreate,
+    user_id: str = Header(..., alias="user-id"),
+    prisma: Prisma = Depends(get_prisma)
+):
+    print("\n=== CRIANDO RECEITA ===")
+    print("User ID:", user_id)
+    print("Dados da transação:", transaction)
+    print("Campos da transação:", transaction.dict().keys())
+    print("Headers recebidos:", user_id)
+    try:
+        await ensure_connection()
+        transaction_data = transaction.dict()
+        print("\nDados recebidos:", transaction_data)
+        
+        transaction_data["user_id"] = user_id
+        print("User ID:", transaction_data["user_id"])
+        
+        transaction_data["type"] = "INCOME"
+        transaction_data["id"] = str(uuid.uuid4())
+        transaction_data["created_at"] = datetime.utcnow()
+        transaction_data["updated_at"] = datetime.utcnow()
+        
+        if isinstance(transaction_data["amount"], (int, float)):
+            transaction_data["amount"] = Decimal(str(transaction_data["amount"]))
+        print("Amount convertido:", transaction_data["amount"])
+        
+        if isinstance(transaction_data["date"], str):
+            transaction_data["date"] = datetime.fromisoformat(transaction_data["date"].replace("Z", "+00:00"))
+        
+        print("Dados finais:", transaction_data)
+        result = await prisma.transactions.create(data=transaction_data)
+        print("Transação criada:", result)
+        print("=== FIM DA CRIAÇÃO DE RECEITA ===\n")
+        return result
+    except Exception as e:
+        print("Erro detalhado:", str(e))
+        print("Tipo do erro:", type(e))
+        print("Dados que causaram o erro:", transaction_data)
+        if hasattr(e, 'errors'):
+            print("Erros de validação:", e.errors())
+            error_msg = e.errors()[0].get('msg', str(e))
+            raise HTTPException(status_code=422, detail=f"Erro de validação: {error_msg}")
+        raise HTTPException(status_code=400, detail=f"Erro ao criar transação: {str(e)}")
+
+@router.delete("/{transaction_id}")
+async def delete_transaction(
+    transaction_id: str,
+    user_id: str = Header(..., alias="user-id"),
+    prisma: Prisma = Depends(get_prisma)
+):
+    try:
+        transaction = await prisma.transactions.find_first(
+            where={
+                "id": transaction_id,
+                "user_id": user_id
+            }
+        )
+        
+        if not transaction:
+            raise HTTPException(status_code=404, detail="Transação não encontrada")
+            
+        await prisma.transactions.delete(where={"id": transaction_id})
+        return {"message": "Transação deletada com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.put("/{transaction_id}", response_model=TransactionOut)
+async def update_transaction(
+    transaction_id: str,
+    transaction: TransactionCreate,
+    user_id: str = Header(..., alias="user-id"),
+    prisma: Prisma = Depends(get_prisma)
+):
+    try:
+        existing = await prisma.transactions.find_first(
+            where={
+                "id": transaction_id,
+                "user_id": user_id
+            }
+        )
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Transação não encontrada")
+            
+        transaction_data = transaction.dict()
+        transaction_data["updated_at"] = datetime.utcnow()
+        
+        if isinstance(transaction_data["amount"], (int, float)):
+            transaction_data["amount"] = Decimal(str(transaction_data["amount"]))
+            
+        if isinstance(transaction_data["date"], str):
+            transaction_data["date"] = datetime.fromisoformat(transaction_data["date"].replace("Z", "+00:00"))
+        
+        result = await prisma.transactions.update(
+            where={"id": transaction_id},
+            data=transaction_data
+        )
+        return result
+    except Exception as e:
+        if hasattr(e, 'errors'):
+            error_msg = e.errors()[0].get('msg', str(e))
+            raise HTTPException(status_code=422, detail=f"Erro de validação: {error_msg}")
+        raise HTTPException(status_code=400, detail=f"Erro ao atualizar transação: {str(e)}")

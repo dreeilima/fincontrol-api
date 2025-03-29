@@ -20,6 +20,7 @@ if not os.path.exists(ENV_PATH):
         )
     )
 
-IP = config("IP")
-PORT = int(config("PORT"))
+# Forçar o uso de localhost para desenvolvimento
+IP = "127.0.0.1"  # Alterado de config("IP") para valor fixo
+PORT = int(config("port", default=8000))
 DATABASE_URL = config("DATABASE_URL")

@@ -1,41 +1,31 @@
-version: '3.8'
-
+version: '3'
 services:
   api:
-    build:
+    build: 
       context: .
       dockerfile: Dockerfile.api
     ports:
       - "8000:8000"
     environment:
-      - ip=168.75.100.151
-      - whatsapp_service_url=http://167.234.238.64:3000
-    env_file:
-      - .env.production
-    depends_on:
-      - db
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=8000
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+    restart: unless-stopped
 
   whatsapp:
-    build:
-      context: .
-      dockerfile: Dockerfile.whatsapp
+    build: 
+      context: ./whatsapp-service
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - API_URL=http://168.75.100.151:8000
-    env_file:
-      - .env.production
     volumes:
-      - ./auth_info:/app/auth_info
-
-  db:
-    image: postgres:15
+      - ./whatsapp-data:/app/whatsapp-sessions
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_URL=http://164.90.170.224:8000
+      - WEBHOOK_URL=http://164.90.170.224:8000/whatsapp/webhook
+    restart: unless-stopped
+    depends_on:
+      - api

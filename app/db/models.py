@@ -84,18 +84,28 @@ class NewPassword(BaseModel):
 
 
 class MessageType(str, Enum):
-    EXPENSE = "EXPENSE"
     INCOME = "INCOME"
+    EXPENSE = "EXPENSE"
     BALANCE = "BALANCE"
     STATEMENT = "STATEMENT"
-    CATEGORIES = "CATEGORIES"
     REPORT = "REPORT"
+    CATEGORIES = "CATEGORIES"
     CATEGORY_REPORT = "CATEGORY_REPORT"
-    EDIT = "EDIT"
+    ERROR = "ERROR"
+    HELP_MESSAGE = "HELP_MESSAGE"
+    HELP_DETAILS = "HELP_DETAILS"
+    FINANCIAL_ADVICE = "FINANCIAL_ADVICE"
 
     @classmethod
     def _missing_(cls, value):
         return cls(value.upper()) if isinstance(value, str) else None
+
+
+class PeriodType(str, Enum):
+    DAILY = "DAILY"
+    WEEKLY = "WEEKLY"
+    MONTHLY = "MONTHLY"
+    YEARLY = "YEARLY"
 
 
 class WhatsAppMessage(BaseModel):

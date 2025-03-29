@@ -26,6 +26,7 @@ Um assistente financeiro inteligente para WhatsApp que ajuda no controle de gast
 
 - Comandos simples via WhatsApp
 - Respostas instantâneas 24/7
+
 - Guia interativo de ajuda
 
 ## 🛠 Tecnologias Utilizadas
@@ -33,7 +34,7 @@ Um assistente financeiro inteligente para WhatsApp que ajuda no controle de gast
 | Camada         | Tecnologias                              |
 | -------------- | ---------------------------------------- |
 | Backend        | Node.js, Express, Prisma ORM, PostgreSQL |
-| WhatsApp       | Baileys Library, Axios                   |
+| WhatsApp       | whatsapp-web.js, Axios                   |
 | Autenticação   | JWT, Bcrypt                              |
 | Infraestrutura | Docker, Render.com                       |
 
