@@ -87,13 +87,5 @@ async def shutdown():
     if prisma.is_connected():
         await prisma.disconnect()
 
-# Essa função salva a documentação OpenAPI dos dados do FastApi em um JSON
-@app.on_event("startup")
-def save_openapi_json():
-    openapi_data = app.openapi()
-    # salva arquivo
-    with open("openapi.json", "w") as file:
-        json.dump(openapi_data, file)
-
 print("\n=== CONFIGURAÇÕES ===")
 print(f"WhatsApp URL: {settings.whatsapp_service_url}")

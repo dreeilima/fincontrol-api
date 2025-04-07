@@ -3,7 +3,7 @@ services:
   api:
     build: 
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
@@ -12,20 +12,3 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
     restart: unless-stopped
-
-  whatsapp:
-    build: 
-      context: ./whatsapp-service
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./whatsapp-data:/app/whatsapp-sessions
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - API_URL=http://164.90.170.224:8000
-      - WEBHOOK_URL=http://164.90.170.224:8000/whatsapp/webhook
-    restart: unless-stopped
-    depends_on:
-      - api
